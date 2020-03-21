@@ -4,8 +4,6 @@ import java.io.RandomAccessFile;
 
 public class Main {
 
-
-
     static void CreateIndexFile(String fileName,int numberOfRecords,int m){
         try {
             RandomAccessFile file = new RandomAccessFile(fileName,"rw");
@@ -28,11 +26,47 @@ public class Main {
         }
     }
     int InsertNewRecordAtIndex (String filename, int RecordID, int Reference){return 0;}
-
-
-
     void DeleteRecordFromIndex (String filename, int RecordID){}
-    int SearchARecord (String filename, int RecordID){return 0;}
+    static int SearchARecord (String filename, int RecordID){
+        try {
+            RandomAccessFile file= new RandomAccessFile(filename,"rw");
+            file.seek(11*4);
+            while (true){
+                int detector = file.readInt();
+                if (detector==1)
+                {
+                    for (int i = 0; i <11 ; i++) {
+                        int reader = file.readInt();
+                        if (reader>=RecordID)
+                        {
+                            int x = file.readInt();
+                            file.seek(x*44);
+                            break;
+                        }
+                    }
+                }
+                else
+                {
+                    for (int i = 0; i <5 ; i++) {
+                        int number = file.readInt();
+                        if (number==RecordID && number!=-1)
+                        {
+                            System.out.println(RecordID +"founded with file reference "+file.readInt());
+                            return 0;
+                        }
+                        else
+                        {
+                            file.readInt();
+                        }
+                    }
+                    System.out.println(RecordID+" no founded!!");
+                    return 0;
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return 0;}
     static void DisplayIndexFileContent(String fileName){
         try {
             RandomAccessFile file = new RandomAccessFile(fileName,"rw");
@@ -70,15 +104,16 @@ public class Main {
             e.printStackTrace();
         }
     }
-
     public static void main(String args[])
     {
-
         /*initialize project*/
         String indexFileName="src//index.bin";
-        fill(indexFileName);
        // CreateIndexFile(indexFileName,10,5);
        // DisplayIndexFileContent(indexFileName);
+        fill(indexFileName);
+        SearchARecord(indexFileName,5);
+        // CreateIndexFile(indexFileName,10,5);
+        // DisplayIndexFileContent(indexFileName);
     }
 }
 
