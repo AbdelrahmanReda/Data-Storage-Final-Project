@@ -29,7 +29,7 @@ public class Main {
             e.printStackTrace();
         }
     }
-    int InsertNewRecordAtIndex (String filename, int RecordID, int Reference){return 0;}
+   
     void DeleteRecordFromIndex (String filename, int RecordID){}
     static int SearchARecord (String filename, int RecordID){
         try {
@@ -140,50 +140,118 @@ public class Main {
     
        }
     
-    
+       static int getNextFreeRecord(RandomAccessFile file){
+           try {
+               file.seek(4);
+               return file.readInt();
+           } catch (IOException e) {
+               e.printStackTrace();
+               return -1;
+           }
+       }
+    public static void splitNode(RandomAccessFile file,int targetRecordIndex )
+    {
+        
+        try {
+            file.seek(targetRecordIndex*44);
+            file.writeInt(1); //convert the record to referential record .
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    public static void updateFirstFreeRecord(RandomAccessFile file,int nextFree){
+        try {
+            file.seek(4);
+            file.writeInt(nextFree);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
     public static void cordinateNode( int recordNumber, int key,int referece) throws FileNotFoundException {
             RandomAccessFile file = new RandomAccessFile("src/index.bin","rw");
+           
+            /*checking the record is full */
         try {
-            file.seek((recordNumber*44));
-            int y = file.readInt();
-            if (y == -1)
+            int memorizer = (int)file.getFilePointer();
+            file.seek(((recordNumber+1)*44)-4); //checkking the last number of the record
+           // System.out.println("last numbe in the record is "+);
+            if (file.readInt()!=-1)
             {
-                file.seek(file.getFilePointer()-4);
-                file.writeInt(0);
-                System.out.println("firt insertion to the record");
-                file.writeInt(key);
-                file.writeInt(referece);
+                
+                //inserting into a full record
+               // updateFirstFreeRecord(file,recordNumber+1);
+                System.out.println("splitting . . . .");
+                
             }
-            else {
-            while (true)
+            else
             {
-             int x = file.readInt();
-                System.out.println("x is "+x+" with index ");
-             if (key<x)
-             {
-                 file.seek(file.getFilePointer()-4);
-                 inertNode(file,key,referece,(int)(file.getFilePointer()));
-                 break;
-             }
-             else if (x == -1)
-             {
-                 System.out.println("file.getFilePointer() ::"+file.getFilePointer());
-                 file.seek(file.getFilePointer()-4);
-                 file.writeInt(key);
-                 file.writeInt(referece);
-                 break;
-             }
-             else
-             {
-                 file.readInt();
-             }
-             
-            }
+                //------
+    
+                file.seek(memorizer);
+                try {
+                    file.seek((recordNumber*44));
+                    int y = file.readInt();
+                    if (y == -1)
+                    {
+                        file.seek(file.getFilePointer()-4);
+                        file.writeInt(0);
+                        System.out.println("firt insertion to the record");
+                        file.writeInt(key);
+                        file.writeInt(referece);
+                    }
+                    else {
+                        while (true)
+                        {
+                            int x = file.readInt();
+                            System.out.println("x is "+x+" with index ");
+                            if (key<x)
+                            {
+                                file.seek(file.getFilePointer()-4);
+                                inertNode(file,key,referece,(int)(file.getFilePointer()));
+                                break;
+                            }
+                            else if (x == -1)
+                            {
+                                System.out.println("file.getFilePointer() ::"+file.getFilePointer());
+                                file.seek(file.getFilePointer()-4);
+                                file.writeInt(key);
+                                file.writeInt(referece);
+                                break;
+                            }
+                            else
+                            {
+                                file.readInt();
+                            }
+                        }
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+    static int InsertNewRecordAtIndex (String filename, int RecordID, int Reference){
+    
+        try {
+            RandomAccessFile file = new RandomAccessFile(filename,"rw");
+            file.seek(4);
+            int firstFreeRecord= file.readInt();
+            System.out.println("firstFreeRecord "+firstFreeRecord);
+            cordinateNode(firstFreeRecord,RecordID,Reference);
+            
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    
+        return 0;
+    }
+    
+    
     public static void main(String args[])
     {
         
@@ -191,20 +259,13 @@ public class Main {
         String indexFileName="src//index.bin";
         CreateIndexFile(indexFileName,10,5);
         DisplayIndexFileContent(indexFileName);
-        try {
-            cordinateNode(1,10,50);
-            cordinateNode(1,30,50);
-            cordinateNode(1,60,50);
-            cordinateNode(1,5,50);
-            cordinateNode(1,1,50);
-          //  cordinateNode(1,6,60);
-         //  cordinateNode(1,3,650);
-           // cordinateNode(1,2,650);
-          // cordinateNode(1,1,650);
-           // cordinateNode(1,1,650);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
+        InsertNewRecordAtIndex(indexFileName,1,30);
+        InsertNewRecordAtIndex(indexFileName,5,34);
+        InsertNewRecordAtIndex(indexFileName,11,342);
+        InsertNewRecordAtIndex(indexFileName,6,52);
+        InsertNewRecordAtIndex(indexFileName,2,123);
+        InsertNewRecordAtIndex(indexFileName,30,675);
+    
         DisplayIndexFileContent(indexFileName);
     
        
