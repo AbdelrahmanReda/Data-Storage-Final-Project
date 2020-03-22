@@ -1,4 +1,3 @@
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -85,37 +84,8 @@ public class Main {
             e.printStackTrace();
         }
     }
-    
-    public static void fill(String path){
-        try {
-            RandomAccessFile file= new RandomAccessFile(path,"rw");
-            int[] arr = {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
-                    1,10,8,32,9,-1,-1,-1,-1,-1,-1,
-                    0,1,120,2,144,3,12,-1,-1,-1,-1,
-                    0,11,192,14,72,12,204,15,108,-1,-1,
-                    0,5,132,6,180,7,24,-1,-1,-1,-1,
-                    0,8,156,9,168,10,48,-1,-1,-1,-1,
-                    0,17,216,18,228,19,84,-1,-1,-1,-1,
-                    0,24,60,30,196,32,240,-1,-1,-1,-1,
-                    1,3,2,7,4,10,5,-1,-1,-1,-1,
-                    1,15,3,19,6,32,7,-1,-1,-1,-1};
-                
-            for (int i = 0; i <arr.length ; i++)
-                file.writeInt(arr[i]);
-    
-           
-            
-            
-         /*   file.seek(0);
-            while (file.getFilePointer()!=(file.length()))
-                System.out.println(file.readInt());*/
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-    
+
+
     public static void inertNode(RandomAccessFile file,int key , int ref,int pointer){
     
         System.out.println("ref is "+pointer);
