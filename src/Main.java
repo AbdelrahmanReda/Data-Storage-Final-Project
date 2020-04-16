@@ -374,15 +374,41 @@ public class Main {
         InsertNewRecordAtIndex(indexFileName, 32, 0);
     }
 
+    public static boolean isUnderFlow(int RequidtedDeletedKeybyteOffset) throws IOException {
+        RandomAccessFile file = new RandomAccessFile("src//index.bin", "rw");
+        file.seek(RequidtedDeletedKeybyteOffset);
+        int ByteOffsetcounter = RequidtedDeletedKeybyteOffset;
+        while (ByteOffsetcounter % 44 != 0) {
+            ByteOffsetcounter -= 4;
+        }
+        ByteOffsetcounter += 4;
+        //System.out.println("ByteOffsetcounter"+((int)(((RequidtedDeletedKeybyteOffset-ByteOffsetcounter)/4)/2)+1));
+        if (((int) (((RequidtedDeletedKeybyteOffset - ByteOffsetcounter) / 4) / 2) + 1) - 1 < (5 / 2))
+            return false;
+        else
+            return true;
+
+    }
+
+    static void DeleteRecordFromIndex(String filename, int RecordID) {
+        try {
+            isUnderFlow(10 * 44 + 4 * 3);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
     public static void main(String[] args) {
         String indexFileName = "src//index.bin";
         CreateIndexFile(indexFileName, 10, 5);
         requiredTestCase();
         DisplayIndexFileContent(indexFileName);
+        DeleteRecordFromIndex(indexFileName, 10);
+
 
     }
 
-    void DeleteRecordFromIndex(String filename, int RecordID) {
-    }
+
 }
 
